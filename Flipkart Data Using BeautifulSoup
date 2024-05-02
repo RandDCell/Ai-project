@@ -1,0 +1,49 @@
+#->>> Scrap Flipkart Data Using BeautifulSoup | Web Scraping with Python
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+Product_Name = []
+Product_Price = []
+Description = []
+Reviews = []
+
+#for i in range(2, 12):
+url = "https://www.flipkart.com/search?q=mobiles+under+50000&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off&page=" + str(1)
+page = requests.get(url)
+# print(page)
+soup = BeautifulSoup(page.text, 'html.parser')
+box = soup.find("div", class_="DOjaWF gdgoEp")
+products = box.find_all("div", class_="KzDlHZ")
+for i in products:
+    name = i.text
+    Product_Name.append(name)
+#print(Product_Name)
+
+prices = box.find_all("div", class_="Nx9bqj _4b5DiR")
+for i in prices:
+    name = i.text
+    Product_Price.append(name)
+#print(Product_Price)
+desc = box.find_all("ul", class_="G4BRas")
+for i in desc:
+    name = i.text
+    Description.append(name)
+#print(Description)
+reviews = box.find_all("div", class_="XQDdHH")
+for i in reviews:
+    name = i.text
+    Reviews.append(name)
+#print(Reviews)
+df = pd.DataFrame({"Product Name": Product_Name, "Prices": Product_Price, "Description": Description, "Reviews": Reviews})
+print(df)
+df.to_csv("Flipkart.csv")
+
+#print(soup)
+
+# np = soup.find("a", class_="_9QVEpD").get("href")
+#cnp = "https://www.flipkart.com" + np
+# print(cnp)
+
+
