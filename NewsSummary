@@ -41,7 +41,7 @@ def summarize():
 
     analysis = TextBlob(article.text)
     sentiment.delete('1.0', 'end')
-    sentiment.insert('1.0',f'polarity: {analysis.polarity},Sentiment: {"positive" if analysis.polarity > 0 else "negative" if analysissys.polability < 0 else "neutral"}')
+    sentiment.insert('1.0',f'polarity: {analysis.polarity},Sentiment: {"positive" if analysis.polarity > 0 else "negative" if analysis.polarity < 0 else "neutral"}')
 
     title.config(state='disabled')
     author.config(state='disabled')
