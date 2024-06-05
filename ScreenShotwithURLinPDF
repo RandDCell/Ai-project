@@ -1,0 +1,75 @@
+from docx.shared import Inches
+from docx import Document
+from io import BytesIO
+import tkinter as tk
+from tkinter import messagebox
+import pyautogui
+import pyperclip
+
+class ScreenshotApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Screenshot Tool")
+
+        self.capture_button = tk.Button(master, text="Capture Screenshot with URL", command=self.capture_screenshot_with_url)
+        self.capture_button.pack(pady=10)
+
+        self.screenshots = []
+
+    def capture_screenshot_with_url(self):
+        # Capture screenshot
+        screenshot = pyautogui.screenshot()
+
+        # Get URL from clipboard
+        url = pyperclip.paste()
+
+        # Add screenshot and URL to lists
+        self.screenshots.append((screenshot, url))
+
+        messagebox.showinfo("Success", f"Screenshot {len(self.screenshots)} captured with URL.")
+
+        # If we have four screenshots, save them to the document
+        if len(self.screenshots) % 4 == 0:
+            self.save_to_docx()
+
+    def save_to_docx(self):
+        if not self.screenshots:
+            messagebox.showwarning("No Screenshots", "No screenshots captured.")
+            return
+
+        # Create a new Word document
+        doc = Document()
+
+        # Add screenshots and URLs to the document
+        for i in range(0, len(self.screenshots), 4):
+            table = doc.add_table(rows=2, cols=2)
+            for row in table.rows:
+                for cell in row.cells:
+                    screenshot, url = self.screenshots[i]
+                    cell.width = Inches(6)
+                    paragraph = cell.paragraphs[0]
+                    run = paragraph.add_run()
+                    run.add_picture(BytesIO(self.screenshot_to_bytes(screenshot)), width=Inches(5))
+                    paragraph.add_run("\nURL: " + url)
+                    i += 1
+
+        # Save the document
+        doc_filename = "C:/Users/randd/PycharmProjects/pythonProject/pythonProject/SS/screenshots_with_urls41.docx"
+        doc.save(doc_filename)
+
+        messagebox.showinfo("Success", f"Screenshots with URLs saved to {doc_filename}.")
+
+    def screenshot_to_bytes(self, screenshot):
+        img_buffer = BytesIO()
+        screenshot.save(img_buffer, format='PNG')
+        img_buffer.seek(0)
+        return img_buffer.getvalue()
+
+def main():
+    root = tk.Tk()
+    app = ScreenshotApp(root)
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
